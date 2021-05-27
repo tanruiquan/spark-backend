@@ -6,6 +6,7 @@ const config = require('./utils/config')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const questionsRouter = require('./controllers/questions')
+const picturesRouter = require('./controllers/pictures')
 const mongoose = require('mongoose')
 
 logger.info('connecting to', config.MONGODB_URI)
@@ -23,6 +24,7 @@ app.use(express.static('build'))
 app.use(express.json())
 
 app.use('/api/questions', questionsRouter)
+app.use('/api/pictures', picturesRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

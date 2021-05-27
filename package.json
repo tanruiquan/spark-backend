@@ -12,14 +12,18 @@
   "author": "Rui Quan",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
-    "mongoose": "^5.12.11"
+    "mongoose": "^5.12.11",
+    "node-fetch": "^2.6.1",
+    "unsplash-js": "^7.0.11"
   },
   "devDependencies": {
     "eslint": "^7.27.0",
+    "eslint-plugin-node": "^11.1.0",
     "jest": "^27.0.1",
     "nodemon": "^2.0.7",
     "supertest": "^6.1.3"

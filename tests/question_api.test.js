@@ -20,7 +20,6 @@ describe('when there is initially some questions saved', () => {
 
   test('all questions are returned', async () => {
     const response = await api.get('/api/questions')
-    console.log('initial questions length is', helper.initialQuestions.length)
     expect(response.body).toHaveLength(helper.initialQuestions.length)
   })
 
