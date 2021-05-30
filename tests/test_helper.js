@@ -3,22 +3,22 @@ const Question = require('../models/question')
 const initialQuestions = [
   {
     id: 1,
-    category: 'This or that',
+    category: 'this-or-that',
     question: 'Morning or Night'
   },
   {
     id: 2,
-    category: 'This or that',
+    category: 'this-or-that',
     question: 'Coffee or Tea'
   },
   {
     id: 3,
-    category: 'This or that',
+    category: 'this-or-that',
     question: 'Indoors or Outdoors'
   },
   {
     id: 4,
-    category: 'Deep question',
+    category: 'deep-questions',
     question: 'Why do we exist?'
   }
 ]

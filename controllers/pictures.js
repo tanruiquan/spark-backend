@@ -10,7 +10,15 @@ const unsplash = createApi({
 
 picturesRouter.get('/random', async (request, response) => {
   const randomPicture = await unsplash.photos.getRandom({})
-  response.json(randomPicture)
+  response.json(randomPicture.response)
+})
+
+picturesRouter.get('/:category/:count', async (request, response) => {
+  const randomPictures = await unsplash.photos.getRandom({
+    query: request.params.category,
+    count: request.params.count
+  })
+  response.json(randomPictures.response)
 })
 
 module.exports = picturesRouter
