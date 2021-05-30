@@ -1,19 +1,21 @@
 {
   "name": "spark-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "server for spark",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test jest --verbose --runInBand",
-    "dev": "NODE_ENV=development nodemon index.js",
-    "start": "NODE_ENV=production node index.js",
-    "lint": "eslint ."
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "lint": "eslint .",
+    "format": "eslint --fix"
   },
   "author": "Rui Quan",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.21.1",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",

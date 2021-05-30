@@ -23,10 +23,6 @@ module.exports = {
             'warn',
             'single'
         ],
-        'semi': [
-            'warn',
-            'never'
-        ],
         "eqeqeq": "warn",
         "no-trailing-spaces": "warn",
         "arrow-spacing": [
