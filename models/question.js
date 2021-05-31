@@ -2,13 +2,20 @@ const mongoose = require('mongoose')
 
 const questionSchema = new mongoose.Schema({
   category: {
-    type: String,
+    type: [String],
     required: true
   },
   question: {
     type: String,
     required: true
-  }
+  },
+  isPicture: {
+    type: Boolean,
+    require: true
+  },
+  this: String,
+  that: String,
+  topic: String
 })
 
 questionSchema.set('toJSON', {

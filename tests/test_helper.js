@@ -3,23 +3,48 @@ const Question = require('../models/question')
 const initialQuestions = [
   {
     id: 1,
-    category: 'this-or-that',
-    question: 'Morning or Night'
+    category: ['solo', 'icebreakers'],
+    question: 'Which of these animals come closest to being your spirit animal?',
+    isPicture: true,
+    topic: 'animal'
+  },
+  {
+    id: 1,
+    category: ['icebreakers', 'this-or-that'],
+    question: 'Are you a morning person or a night person?',
+    isPicture: true,
+    this: 'Morning',
+    that: 'Night'
   },
   {
     id: 2,
-    category: 'this-or-that',
-    question: 'Coffee or Tea'
+    category: ['icebreakers', 'this-or-that'],
+    question: 'Do you prefer coffee or tea?',
+    isPicture: true,
+    this: 'Coffee',
+    that: 'Tea'
   },
   {
     id: 3,
-    category: 'this-or-that',
-    question: 'Indoors or Outdoors'
+    category: ['this-or-that', 'deep'],
+    question: 'Is happiness or fulfillment more important to you?',
+    isPicture: false,
+    this: 'Happiness',
+    that: 'Fulfilment'
   },
   {
     id: 4,
-    category: 'deep-questions',
-    question: 'Why do we exist?'
+    category: ['this-or-that', 'deep'],
+    question: 'Are you the type to follow your heart or follow your brain?',
+    isPicture: false,
+    this: 'Follow your heart',
+    that: 'Follow your brain'
+  },
+  {
+    id: 5,
+    category: ['deep'],
+    question: 'Why do you think we exist?',
+    isPicture: false
   }
 ]
 
