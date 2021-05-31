@@ -19,8 +19,9 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
     logger.error('error connection to MongoDB:', error.message)
   })
 
+app.use('/',express.static('build')) // look in the build directory to serve frontend
+
 app.use(cors())
-app.use(express.static('build'))
 app.use(express.json())
 
 app.use('/api/questions', questionsRouter)
