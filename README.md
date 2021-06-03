@@ -13,3 +13,8 @@ This repository contains the backend for SPARK.
 # Getting Started
 Create an .env file with your Unsplash API Access Key, MongoDB URI and PORT
 
+# Deployment
+We use heroku. Push using
+`git push heroku branch_name:main`
+
+Remember to set your config vars in heroku!
