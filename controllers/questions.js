@@ -11,4 +11,11 @@ questionsRouter.get('/:category', async (request, response) => {
   response.json(questions)
 })
 
+questionsRouter.post('/', async (request, response) => {
+  const body = request.body
+  const newQuestion = new Question({...body})
+  const savedQuestion = await newQuestion.save()
+  response.json(savedQuestion)
+})
+
 module.exports = questionsRouter

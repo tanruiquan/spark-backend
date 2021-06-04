@@ -9,7 +9,7 @@ const initialQuestions = [
     topic: 'animal'
   },
   {
-    id: 1,
+    id: 2,
     category: ['icebreakers', 'this-or-that'],
     question: 'Are you a morning person or a night person?',
     isPicture: true,
@@ -17,7 +17,7 @@ const initialQuestions = [
     that: 'Night'
   },
   {
-    id: 2,
+    id: 3,
     category: ['icebreakers', 'this-or-that'],
     question: 'Do you prefer coffee or tea?',
     isPicture: true,
@@ -25,7 +25,7 @@ const initialQuestions = [
     that: 'Tea'
   },
   {
-    id: 3,
+    id: 4,
     category: ['this-or-that', 'deep'],
     question: 'Is happiness or fulfillment more important to you?',
     isPicture: false,
@@ -33,7 +33,7 @@ const initialQuestions = [
     that: 'Fulfilment'
   },
   {
-    id: 4,
+    id: 5,
     category: ['this-or-that', 'deep'],
     question: 'Are you the type to follow your heart or follow your brain?',
     isPicture: false,
@@ -41,7 +41,7 @@ const initialQuestions = [
     that: 'Follow your brain'
   },
   {
-    id: 5,
+    id: 6,
     category: ['deep'],
     question: 'Why do you think we exist?',
     isPicture: false
