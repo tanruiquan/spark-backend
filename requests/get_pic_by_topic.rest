@@ -1,1 +1,1 @@
-GET http://localhost:3003/api/pictures/topic/covid-19/2/landscape
+GET http://localhost:3003/api/pictures/topic/animals/2

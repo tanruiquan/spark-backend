@@ -9,7 +9,13 @@ const questionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  isPicture: {
+  questionAlt: String,
+  level: {
+    type: Number,
+    min: [1, 'level musst at least be 1'],
+    max: [3, 'level must at most be 3']
+  },
+  canPicture: {
     type: Boolean,
     require: true
   },
