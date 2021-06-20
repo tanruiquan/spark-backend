@@ -27,7 +27,7 @@ app.use(express.json())
 app.use('/api/questions', questionsRouter)
 app.use('/api/pictures', picturesRouter)
 
-app.use(middleware.unknownEndpoint)
+app.use('/api/*', middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
 app.use('/*', express.static('build'))
