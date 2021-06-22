@@ -1,1 +1,1 @@
-GET http://localhost:3003/api/pictures/topic/animals/2
+GET http://localhost:3003/api/pictures/topic/people,yt/8/
