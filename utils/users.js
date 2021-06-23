@@ -1,22 +1,27 @@
 const users = []
 
-const addUser = (id) => {
+const addUser = (userID, otherUserID) => {
   const user = {
-    userID: id,
+    userID,
+    otherUserID
   }
   users.push(user)
   return user
 }
 
-const removeUser = (id) => {
-  const index = users.findIndex(user => user.userID === id)
+const removeUser = (userID) => {
+  const index = users.findIndex(user => user.userID === userID)
   if (index !== -1) {
     return users.splice(index, 1)[0]
   }
 }
 
-const getUser = (id) => {
-  return users.find(user => user.userID === id)
+const getUser = (userID) => {
+  return users.find(user => user.userID === userID)
 }
 
-module.exports = { addUser, removeUser, getUser }
+const getAllUsers = () => {
+  return users
+}
+
+module.exports = { addUser, removeUser, getUser, getAllUsers }

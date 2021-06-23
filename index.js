@@ -3,7 +3,7 @@ const http = require('http')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
 const socketio = require('socket.io')
-const { addUser, removeUser, getUser, getUserInRoom } = require('./utils/users')
+const { addUser, removeUser, getUser, getAllUsers } = require('./utils/users')
 
 const server = http.createServer(app)
 const io = socketio(server)
@@ -50,26 +50,36 @@ io.on('connection', socket => {
   // join the "userID" room
   socket.join(socket.userID);
 
-  socket.on('join', (userID, callback) => {
-    console.log('on join: the socket.userID is', userID)
-    addUser(userID)
+  socket.on('join', async (otherUserID, callback) => {
+    const matchingSockets = await io.in(otherUserID).allSockets()
+    const noSuchRoomCode = matchingSockets.size === 0
+    if (noSuchRoomCode) {
+      return callback({ error: 'The room code does not exist'})
+    }
 
-    // THIS IS FOR TESTING ONLY
-    socket.join('TEST ROOM')
-    console.log(socket.rooms)
+    //Add both users into the users array
+    console.log(`a socket with userID ${socket.userID} has join ${otherUserID}`)
+    addUser(socket.userID, otherUserID)
+    addUser(otherUserID, socket.userID)
+    console.log({users: getAllUsers()})
 
-    socket.emit('message', { content: 'Hello, welcome to sparkchat!', from: 'sparkbot', to: userID })
+    //Admit both users into the chat room
+    callback({})
+    io.to(otherUserID).emit('joined')
 
-    callback()
+    //Welcome both users
+    socket.emit('message', { content: 'Hello, welcome to sparkchat!', from: 'sparkbot', to: socket.userID })
+    io.to(otherUserID).emit('message', { content: 'Hello, welcome to sparkchat!', from: 'sparkbot', to: otherUserID })
   })
 
-
   // forward the private message to the right recipient (and to other tabs of the sender)
-  socket.on('private message', ({ content, to }, callback) => {
-    io.to('TEST ROOM').emit('message', {
+  socket.on('private message', ({ content }, callback) => {
+    const user = getUser(socket.userID)
+    const otherUserID = user.otherUserID
+    io.to(socket.userID).to(otherUserID).emit('message', {
       content,
       from: socket.userID,
-      to,
+      to: otherUserID,
     })
     callback()
   })
@@ -77,6 +87,7 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     console.log(`a socket with userID ${socket.userID} has disconnected`)
     removeUser(socket.userID)
+    console.log({users: getAllUsers()})
   })
 
   //EVERYTHING BELOW INGNORE FOR NOW
@@ -92,14 +103,8 @@ io.on('connection', socket => {
       sessionStore.saveSession(socket.sessionID, {
         userID: socket.userID,
         connected: false,
-      });
+      })
     }
-  });
-
-  //NOT USE FOR NOW< THIS IS RUBBISH
-  socket.on('create', callback => {
-    addUser(socket.id)
-    socket.emit('message', { content: 'Hello, welcome to sparkchat!' })
   })
 })
 
