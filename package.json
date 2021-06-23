@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "start": "cross-env NODE_ENV=production node index.js",
     "lint": "eslint .",
-    "format": "eslint --fix"
+    "format": "eslint . --fix"
   },
   "author": "Rui Quan",
   "license": "MIT",

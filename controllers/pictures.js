@@ -83,24 +83,6 @@ picturesRouter.get('/topic', async (request, response) => {
   response.json(res.data)
 })
 
-/*
-picturesRouter.get('/topic/test', async (request, response) => {
-  let config = {
-    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` }
-  }
-
-  config = {
-    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
-    params: {
-      topics: 'Jpg6Kidl-Hk,towJZFskpGg',
-      count: '10',
-    }
-  }
-  const res = await axios.get(`${baseUrl}/photos/random`, config)
-  response.json(res.data)
-})
-*/
-
 //topics are case-sensitve
 picturesRouter.get('/topic/:topics', async (request, response) => {
   let config = {
