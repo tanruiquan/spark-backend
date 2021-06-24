@@ -53,7 +53,8 @@ io.on('connection', socket => {
   socket.on('join', async (otherUserID, callback) => {
     const matchingSockets = await io.in(otherUserID).allSockets()
     const noSuchRoomCode = matchingSockets.size === 0
-    if (noSuchRoomCode) {
+    const roomAlreadyExist = getUser(otherUserID)
+    if (noSuchRoomCode || roomAlreadyExist) {
       return callback({ error: 'The room code does not exist'})
     }
 
@@ -84,10 +85,20 @@ io.on('connection', socket => {
     callback()
   })
 
+  socket.on('leave', () => {
+    console.log(`a socket with userID ${socket.userID} has left`)
+    const user = getUser(socket.userID)
+    const otherUserID = user.otherUserID
+    removeUser(socket.userID)
+    io.to(otherUserID).emit('message', {
+      content: 'The other user has left the chat',
+      from: 'sparkbot',
+      to: otherUserID
+    })
+  })
+
   socket.on('disconnect', () => {
     console.log(`a socket with userID ${socket.userID} has disconnected`)
-    removeUser(socket.userID)
-    console.log({users: getAllUsers()})
   })
 
   //EVERYTHING BELOW INGNORE FOR NOW
