@@ -6,7 +6,7 @@ const baseUrl = 'https://api.unsplash.com'
 
 picturesRouter.get('/random', async (request, response) => {
   const config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`}
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` }
   }
   const res = await axios.get(`${baseUrl}/photos/random`, config)
   response.json(res.data)
@@ -14,7 +14,7 @@ picturesRouter.get('/random', async (request, response) => {
 
 picturesRouter.get('/random/:count', async (request, response) => {
   const config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`},
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {
       count: request.params.count
     }
@@ -25,7 +25,7 @@ picturesRouter.get('/random/:count', async (request, response) => {
 
 picturesRouter.get('/random/:count/:orientation', async (request, response) => {
   const config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`},
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {
       count: request.params.count,
       orientation: request.params.orientation
@@ -37,7 +37,7 @@ picturesRouter.get('/random/:count/:orientation', async (request, response) => {
 
 picturesRouter.get('/query/:query', async (request, response) => {
   const config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`},
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {
       query: request.params.query
     }
@@ -48,7 +48,7 @@ picturesRouter.get('/query/:query', async (request, response) => {
 
 picturesRouter.get('/query/:query/:count', async (request, response) => {
   const config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`},
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {
       query: request.params.query,
       count: request.params.count
@@ -60,7 +60,7 @@ picturesRouter.get('/query/:query/:count', async (request, response) => {
 
 picturesRouter.get('/query/:query/:count/:orientation', async (request, response) => {
   const config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`},
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {
       query: request.params.query,
       count: request.params.count,
@@ -74,7 +74,7 @@ picturesRouter.get('/query/:query/:count/:orientation', async (request, response
 //does not return photos, returns a list of topics
 picturesRouter.get('/topic', async (request, response) => {
   const config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`},
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {
       per_page: 35
     }
@@ -84,34 +84,40 @@ picturesRouter.get('/topic', async (request, response) => {
 })
 
 //topics are case-sensitve
-picturesRouter.get('/topic/:topic', async (request, response) => {
+picturesRouter.get('/topic/:topics', async (request, response) => {
   let config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`}
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` }
   }
-  let res = await axios.get(`${baseUrl}/topics/${request.params.topic}`, config)
-  const topicId = res.data.id
+  const topics = request.params.topics
+  const topicsArr = topics.split(',')
+  let res = await axios.all(topicsArr.map(topic => axios.get(`${baseUrl}/topics/${topic}`, config)))
+  const topicsIdArr = res.map(r => r.data.id)
+  const topicsId = topicsIdArr.join()
 
   config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`},
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {
-      topics: topicId
+      topics: topicsId
     }
   }
   res = await axios.get(`${baseUrl}/photos/random`, config)
   response.json(res.data)
 })
 
-picturesRouter.get('/topic/:topic/:count', async (request, response) => {
+picturesRouter.get('/topic/:topics/:count', async (request, response) => {
   let config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`}
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` }
   }
-  let res = await axios.get(`${baseUrl}/topics/${request.params.topic}`, config)
-  const topicId = res.data.id
+  const topics = request.params.topics
+  const topicsArr = topics.split(',')
+  let res = await axios.all(topicsArr.map(topic => axios.get(`${baseUrl}/topics/${topic}`, config)))
+  const topicsIdArr = res.map(r => r.data.id)
+  const topicsId = topicsIdArr.join()
 
   config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`},
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {
-      topics: topicId,
+      topics: topicsId,
       count: request.params.count
     }
   }
@@ -119,17 +125,20 @@ picturesRouter.get('/topic/:topic/:count', async (request, response) => {
   response.json(res.data)
 })
 
-picturesRouter.get('/topic/:topic/:count/:orientation', async (request, response) => {
+picturesRouter.get('/topic/:topics/:count/:orientation', async (request, response) => {
   let config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`}
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` }
   }
-  let res = await axios.get(`${baseUrl}/topics/${request.params.topic}`, config)
-  const topicId = res.data.id
+  const topics = request.params.topics
+  const topicsArr = topics.split(',')
+  let res = await axios.all(topicsArr.map(topic => axios.get(`${baseUrl}/topics/${topic}`, config)))
+  const topicsIdArr = res.map(r => r.data.id)
+  const topicsId = topicsIdArr.join()
 
   config = {
-    headers: {Authorization: `Client-ID ${env.UNSPLASH_API_KEY}`},
+    headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {
-      topics: topicId,
+      topics: topicsId,
       count: request.params.count,
       orientation: request.params.orientation
     }
