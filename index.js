@@ -12,23 +12,24 @@ const crypto = require('crypto')
 const randomId = () => crypto.randomBytes(8).toString('hex')
 
 const { InMemorySessionStore } = require('./utils/sessionStore');
-const sessionStore = new InMemorySessionStore();
+const sessionStore = new InMemorySessionStore()
 
 io.use((socket, next) => {
-  const sessionID = socket.handshake.auth.sessionID;
+  const sessionID = socket.handshake.auth.sessionID
+  console.log({sessionID})
   if (sessionID) {
     // find existing session
-    const session = sessionStore.findSession(sessionID);
+    const session = sessionStore.findSession(sessionID)
     if (session) {
-      socket.sessionID = sessionID;
-      socket.userID = session.userID;
-      return next();
+      socket.sessionID = sessionID
+      socket.userID = session.userID
+      return next()
     }
   }
 
   // create new session
-  socket.sessionID = randomId();
-  socket.userID = randomId();
+  socket.sessionID = randomId()
+  socket.userID = randomId()
   next();
 });
 
@@ -46,9 +47,6 @@ io.on('connection', socket => {
     sessionID: socket.sessionID,
     userID: socket.userID,
   })
-
-  // join the "userID" room
-  socket.join(socket.userID)
 
   socket.on('joining', async (roomCode, callback) => {
     const matchingSockets = await io.in(roomCode).allSockets()
