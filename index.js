@@ -48,36 +48,39 @@ io.on('connection', socket => {
   })
 
   // join the "userID" room
-  socket.join(socket.userID);
+  socket.join(socket.userID)
 
-  socket.on('join', async (otherUserID, callback) => {
-    const matchingSockets = await io.in(otherUserID).allSockets()
-    const noSuchRoomCode = matchingSockets.size === 0
-    const roomAlreadyExist = getUser(otherUserID)
-    if (noSuchRoomCode || roomAlreadyExist) {
-      return callback({ error: 'The room code does not exist'})
+  socket.on('joining', async (roomCode, callback) => {
+    const matchingSockets = await io.in(roomCode).allSockets()
+    const roomExists = matchingSockets.size === 1
+    if (roomExists) {
+      //Admit both users into the chat room
+      callback({})
+      io.to(roomCode).emit('joining')
+    } else {
+      callback({ error: 'The room code does not exist'})
     }
+  })
 
-    //Add both users into the users array
-    console.log(`a socket with userID ${socket.userID} has join ${otherUserID}`)
-    addUser(socket.userID, otherUserID)
-    addUser(otherUserID, socket.userID)
+  socket.on('join', (roomCode) => {
+    //Admit other user if neccessary
+    io.to(roomCode).emit('joining')
+
+    //Add user into the room + users array
+    console.log(`a socket with userID ${socket.userID} has join ${roomCode}`)
+    socket.join(roomCode)
+    addUser(socket.userID, roomCode)
     console.log({users: getAllUsers()})
 
-    //Admit both users into the chat room
-    callback({})
-    io.to(otherUserID).emit('joined')
-
-    //Welcome both users
+    //Welcome user
     socket.emit('message', { content: 'Hello, welcome to sparkchat!', from: 'sparkbot', to: socket.userID })
-    io.to(otherUserID).emit('message', { content: 'Hello, welcome to sparkchat!', from: 'sparkbot', to: otherUserID })
   })
 
   // forward the private message to the right recipient (and to other tabs of the sender)
   socket.on('private message', ({ content }, callback) => {
     const user = getUser(socket.userID)
     const otherUserID = user.otherUserID
-    io.to(socket.userID).to(otherUserID).emit('message', {
+    io.to(otherUserID).emit('message', {
       content,
       from: socket.userID,
       to: otherUserID,
@@ -90,6 +93,7 @@ io.on('connection', socket => {
     const user = getUser(socket.userID)
     const otherUserID = user.otherUserID
     removeUser(socket.userID)
+    console.log({users: getAllUsers()})
     io.to(otherUserID).emit('message', {
       content: 'The other user has left the chat',
       from: 'sparkbot',
@@ -102,6 +106,9 @@ io.on('connection', socket => {
   })
 
   //EVERYTHING BELOW INGNORE FOR NOW
+  socket.on('debug', () => {
+    console.log('unload');
+  })
 
   // notify users upon disconnection
   socket.on('disconnect', async () => {
