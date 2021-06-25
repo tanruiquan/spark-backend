@@ -18,7 +18,7 @@ questionsRouter.get('/:category', async (request, response) => {
 questionsRouter.get('/:category/:level', async (request, response) => {
   const questions = await Question.find({
     category: request.params.category,
-    level: request.params.level
+    level: request.params.level,
   })
   if (questions.length === 0) {
     response.status(400).end()
