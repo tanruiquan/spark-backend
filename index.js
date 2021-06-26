@@ -9,60 +9,78 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 const crypto = require('crypto')
-const randomId = () => crypto.randomBytes(8).toString('hex')
+const randomId = (bytes) => crypto.randomBytes(bytes).toString('hex')
 
 const { InMemorySessionStore } = require('./utils/sessionStore');
 const sessionStore = new InMemorySessionStore()
 
 io.use((socket, next) => {
-  const sessionID = socket.handshake.auth.sessionID
-  console.log({sessionID})
-  if (sessionID) {
+  const userID = socket.handshake.auth.userID
+  if (userID) {
     // find existing session
-    const session = sessionStore.findSession(sessionID)
-    if (session) {
-      socket.sessionID = sessionID
-      socket.userID = session.userID
+    const user = sessionStore.findSession(userID)
+    if (user) {
+      socket.userID = userID
+      socket.roomCode = user.roomCode
       return next()
     }
   }
 
   // create new session
-  socket.sessionID = randomId()
-  socket.userID = randomId()
-  next();
+  socket.userID = randomId(8)
+  next()
 });
 
 io.on('connection', socket => {
   console.log(`a socket with userID ${socket.userID} has connected`)
 
-  // persist session
-  sessionStore.saveSession(socket.sessionID, {
-    userID: socket.userID,
-    connected: true,
+  socket.on('create', (empty, callback) => {
+    if (socket.roomCode) {
+      return callback({ roomCode: socket.roomCode })
+    }
+
+    const roomCode = randomId(2)
+    socket.join(roomCode)
+    socket.emit('create', roomCode)
+    callback({})
   })
 
-  // emit session details
-  socket.emit('session', {
-    sessionID: socket.sessionID,
-    userID: socket.userID,
+  socket.on('onJoin', (empty, callback) => {
+    if (socket.roomCode) {
+      return callback(socket.roomCode)
+    }
+    callback({})
   })
 
   socket.on('joining', async (roomCode, callback) => {
     const matchingSockets = await io.in(roomCode).allSockets()
     const roomExists = matchingSockets.size === 1
     if (roomExists) {
-      //Admit both users into the chat room
+      // Admit both users into the chat room
       callback({})
-      io.to(roomCode).emit('joining')
+      io.to(roomCode).emit('joining', roomCode)
     } else {
       callback({ error: 'The room code does not exist'})
     }
   })
 
   socket.on('join', (roomCode) => {
-    //Admit other user if neccessary
-    io.to(roomCode).emit('joining')
+    // Admit other user if neccessary
+    io.to(roomCode).emit('joining', roomCode)
+
+    // Save detail
+    socket.roomCode = roomCode
+
+    // Save session
+    sessionStore.saveSession(socket.userID, {
+      roomCode
+    })
+
+    // Emit session details
+    socket.emit('session', {
+      userID: socket.userID,
+      roomCode: socket.roomCode
+    })
 
     //Add user into the room + users array
     console.log(`a socket with userID ${socket.userID} has join ${roomCode}`)
@@ -77,11 +95,11 @@ io.on('connection', socket => {
   // forward the private message to the right recipient (and to other tabs of the sender)
   socket.on('private message', ({ content }, callback) => {
     const user = getUser(socket.userID)
-    const otherUserID = user.otherUserID
-    io.to(otherUserID).emit('message', {
+    const roomCode = user.roomCode
+    io.to(roomCode).emit('message', {
       content,
       from: socket.userID,
-      to: otherUserID,
+      to: roomCode,
     })
     callback()
   })

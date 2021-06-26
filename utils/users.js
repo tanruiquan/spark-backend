@@ -1,9 +1,9 @@
 const users = []
 
-const addUser = (userID, otherUserID) => {
+const addUser = (userID, roomCode) => {
   const user = {
     userID,
-    otherUserID
+    roomCode
   }
   users.push(user)
   return user
