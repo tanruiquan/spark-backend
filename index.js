@@ -12,57 +12,37 @@ const io = socketio(server)
 const crypto = require('crypto')
 const randomId = (bytes) => crypto.randomBytes(bytes).toString('hex')
 
-const { InMemorySessionStore } = require('./utils/sessionStore');
-const sessionStore = new InMemorySessionStore()
-
 io.use((socket, next) => {
+  // Check if user already exists
   const userID = socket.handshake.auth.userID
   if (userID) {
-    // find existing session
-    const user = sessionStore.findSession(userID)
-    if (user) {
-      socket.userID = userID
-      socket.roomCode = user.roomCode
-      return next()
+    socket.userID = userID
+    const room = getRoomWith(userID)
+    if (room) {
+      socket.join(room.roomCode)
     }
+    return next()
   }
 
-  // create new session
+  // create new user
   socket.userID = randomId(8)
   next()
 });
 
-// io.use((socket, next) => {
-//   socket.onAny((event, ...args) => {
-//     console.log('Catch-all listener', event, args)
-//   })
-//   next()
-// })
-
 io.on('connection', socket => {
-  //console.log(`a socket with userID ${socket.userID} has connected`)
+  console.log(`a socket with userID ${socket.userID} has connected`)
 
-  socket.on('create', (empty, callback) => {
+  socket.on('create', () => {
     const roomCode = randomId(2)
     socket.emit('create', roomCode)
     socket.join(roomCode)
-    callback({})
-  })
-
-  socket.on('onJoin', (empty, callback) => {
-    const room = getRoomWith(socket.userID)
-    if (room) {
-      return callback(room.roomCode)
-    }
-    callback({})
   })
 
   socket.on('joining', async (roomCode, callback) => {
     const matchingSockets = await io.in(roomCode).allSockets()
     const roomExists = matchingSockets.size === 1
     if (roomExists) {
-      // Admit both users into the chat room
-      io.to(roomCode).emit('joining', roomCode)
+      // Admit user into the chatroom
       callback({})
     } else {
       callback({ error: 'The room code does not exist'})
@@ -70,13 +50,8 @@ io.on('connection', socket => {
   })
 
   socket.on('join', (roomCode) => {
-    // Admit other user if neccessary
-    io.to(roomCode).emit('joining', roomCode)
-
-    // Save session
-    sessionStore.saveSession(socket.userID, {
-      roomCode
-    })
+    // Admit other user into the chatroom
+    socket.to(roomCode).emit('joining', roomCode)
 
     // Emit session details
     socket.emit('session', {
@@ -155,24 +130,9 @@ io.on('connection', socket => {
     //console.log(`a socket with userID ${socket.userID} has disconnected`)
   })
 
-  //EVERYTHING BELOW INGNORE FOR NOW
+  // For debugging
   socket.on('debug', () => {
     console.log('unload')
-  })
-
-  // notify users upon disconnection
-  socket.on('disconnect', async () => {
-    const matchingSockets = await io.in(socket.userID).allSockets();
-    const isDisconnected = matchingSockets.size === 0;
-    if (isDisconnected) {
-      // notify other users
-      socket.broadcast.emit('user disconnected', socket.userID); //not implemented yet
-      // update the connection status of the session
-      sessionStore.saveSession(socket.sessionID, {
-        userID: socket.userID,
-        connected: false,
-      })
-    }
   })
 })
 
