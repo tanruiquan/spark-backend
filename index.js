@@ -3,8 +3,8 @@ const http = require('http')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
 const socketio = require('socket.io')
-const { addUser, removeUser, getUser, getAllUsers } = require('./utils/users')
-const { addRoom, removeRoom, getRoom, getAllRooms } = require('./utils/waitingRooms')
+const { addUserToRoom, removeUserFromRoom, getRoomWith, canNext, resetNext } = require('./utils/rooms')
+const { addWaitingRoom, removeWaitingRoom, getWaitingRoom } = require('./utils/waitingRooms')
 
 const server = http.createServer(app)
 const io = socketio(server)
@@ -32,30 +32,27 @@ io.use((socket, next) => {
   next()
 });
 
-io.use((socket, next) => {
-  socket.onAny((event, ...args) => {
-    console.log('Catch-all listener', event, args);
-  });
-  next()
-})
+// io.use((socket, next) => {
+//   socket.onAny((event, ...args) => {
+//     console.log('Catch-all listener', event, args)
+//   })
+//   next()
+// })
 
 io.on('connection', socket => {
   //console.log(`a socket with userID ${socket.userID} has connected`)
 
   socket.on('create', (empty, callback) => {
-    if (socket.roomCode) {
-      return callback({ roomCode: socket.roomCode })
-    }
-
     const roomCode = randomId(2)
-    socket.join(roomCode)
     socket.emit('create', roomCode)
+    socket.join(roomCode)
     callback({})
   })
 
   socket.on('onJoin', (empty, callback) => {
-    if (socket.roomCode) {
-      return callback(socket.roomCode)
+    const room = getRoomWith(socket.userID)
+    if (room) {
+      return callback(room.roomCode)
     }
     callback({})
   })
@@ -65,8 +62,8 @@ io.on('connection', socket => {
     const roomExists = matchingSockets.size === 1
     if (roomExists) {
       // Admit both users into the chat room
-      callback({})
       io.to(roomCode).emit('joining', roomCode)
+      callback({})
     } else {
       callback({ error: 'The room code does not exist'})
     }
@@ -76,9 +73,6 @@ io.on('connection', socket => {
     // Admit other user if neccessary
     io.to(roomCode).emit('joining', roomCode)
 
-    // Save detail
-    socket.roomCode = roomCode
-
     // Save session
     sessionStore.saveSession(socket.userID, {
       roomCode
@@ -87,46 +81,55 @@ io.on('connection', socket => {
     // Emit session details
     socket.emit('session', {
       userID: socket.userID,
-      roomCode: socket.roomCode
     })
 
-    //Add user into the room + users array
+    //Add user into the room
     console.log(`a socket with userID ${socket.userID} has join ${roomCode}`)
     socket.join(roomCode)
-    addUser(socket.userID, roomCode)
-    //console.log({users: getAllUsers()})
+    addUserToRoom(roomCode, socket.userID)
 
     //Welcome user
     socket.emit('message', { content: 'Hello, welcome to sparkchat!', from: 'sparkbot', to: socket.userID })
   })
 
   socket.on('waiting', (empty, callback) => {
-    let roomCode = getRoom()
-    if (roomCode) {
-      callback(roomCode)
-      removeRoom(roomCode)
+    const room = getWaitingRoom()
+    if (room) {
+      callback(room.roomCode)
     } else {
-      roomCode = randomId(2)
-      socket.roomCode = roomCode
+      const roomCode = randomId(2)
+      addWaitingRoom(roomCode, socket.userID)
       socket.join(roomCode)
-      addRoom(roomCode)
       callback()
     }
   })
 
   socket.on('leaveWaiting', () => {
-    const roomCode = socket.roomCode
-    removeRoom(roomCode)
+    removeWaitingRoom(socket.userID)
   })
 
   socket.on('setQuestions', (questions) => {
-    io.to(socket.roomCode).emit('setQuestions', questions)
+    const room = getRoomWith(socket.userID)
+    console.log({room})
+    io.to(room.roomCode).emit('setQuestions', questions)
+  })
+
+  socket.on('nextQuestion', () => {
+    const userID = socket.userID
+    const room = getRoomWith(userID)
+    const roomCode = room.roomCode
+    if (canNext(userID)) {
+      resetNext(userID)
+      io.to(roomCode).emit('next')
+    } else {
+      socket.to(roomCode).emit('message', { content: 'The other user would like to move on to the next question', from: 'sparkbot', to: userID})
+    }
   })
 
   // forward the private message to the right recipient (and to other tabs of the sender)
   socket.on('private message', ({ content }, callback) => {
-    const user = getUser(socket.userID)
-    const roomCode = user.roomCode
+    const room = getRoomWith(socket.userID)
+    const roomCode = room.roomCode
     io.to(roomCode).emit('message', {
       content,
       from: socket.userID,
@@ -137,10 +140,10 @@ io.on('connection', socket => {
 
   socket.on('leave', () => {
     console.log(`a socket with userID ${socket.userID} has left`)
-    const user = getUser(socket.userID)
-    const roomCode = user.roomCode
-    removeUser(socket.userID)
-    //console.log({users: getAllUsers()})
+    const userID = socket.userID
+    const room = getRoomWith(userID)
+    const roomCode = room.roomCode
+    removeUserFromRoom(roomCode, userID)
     io.to(roomCode).emit('message', {
       content: 'The other user has left the chat',
       from: 'sparkbot',

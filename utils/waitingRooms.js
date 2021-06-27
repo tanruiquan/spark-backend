@@ -1,24 +1,23 @@
 const waitingRooms = []
 
-const addRoom = (roomCode) => {
-  waitingRooms.push(roomCode)
-  return roomCode
+const addWaitingRoom = (roomCode, userID) => {
+  const newRoom = {
+    roomCode,
+    userID,
+  }
+  waitingRooms.push(newRoom)
+  return newRoom
 }
 
-const removeRoom = (roomCode) => {
-  const index = waitingRooms.findIndex(room => room === roomCode)
+const removeWaitingRoom = (userID) => {
+  const index = waitingRooms.findIndex(room => room.userID === userID)
   if (index !== -1) {
     return waitingRooms.splice(index, 1)[0]
   }
 }
 
-const getRoom = () => {
-  const firstRoom = waitingRooms.shift()
-  return firstRoom
+const getWaitingRoom = () => {
+  return waitingRooms.shift()
 }
 
-const getAllRooms = () => {
-  return waitingRooms
-}
-
-module.exports = { addRoom, removeRoom, getRoom, getAllRooms }
+module.exports = { addWaitingRoom, removeWaitingRoom, getWaitingRoom }
