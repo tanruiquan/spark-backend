@@ -32,8 +32,15 @@ io.use((socket, next) => {
   next()
 });
 
+io.use((socket, next) => {
+  socket.onAny((event, ...args) => {
+    console.log('Catch-all listener', event, args);
+  });
+  next()
+})
+
 io.on('connection', socket => {
-  console.log(`a socket with userID ${socket.userID} has connected`)
+  //console.log(`a socket with userID ${socket.userID} has connected`)
 
   socket.on('create', (empty, callback) => {
     if (socket.roomCode) {
@@ -87,7 +94,7 @@ io.on('connection', socket => {
     console.log(`a socket with userID ${socket.userID} has join ${roomCode}`)
     socket.join(roomCode)
     addUser(socket.userID, roomCode)
-    console.log({users: getAllUsers()})
+    //console.log({users: getAllUsers()})
 
     //Welcome user
     socket.emit('message', { content: 'Hello, welcome to sparkchat!', from: 'sparkbot', to: socket.userID })
@@ -112,6 +119,10 @@ io.on('connection', socket => {
     removeRoom(roomCode)
   })
 
+  socket.on('setQuestions', (questions) => {
+    io.to(socket.roomCode).emit('setQuestions', questions)
+  })
+
   // forward the private message to the right recipient (and to other tabs of the sender)
   socket.on('private message', ({ content }, callback) => {
     const user = getUser(socket.userID)
@@ -129,7 +140,7 @@ io.on('connection', socket => {
     const user = getUser(socket.userID)
     const roomCode = user.roomCode
     removeUser(socket.userID)
-    console.log({users: getAllUsers()})
+    //console.log({users: getAllUsers()})
     io.to(roomCode).emit('message', {
       content: 'The other user has left the chat',
       from: 'sparkbot',
@@ -138,7 +149,7 @@ io.on('connection', socket => {
   })
 
   socket.on('disconnect', () => {
-    console.log(`a socket with userID ${socket.userID} has disconnected`)
+    //console.log(`a socket with userID ${socket.userID} has disconnected`)
   })
 
   //EVERYTHING BELOW INGNORE FOR NOW
