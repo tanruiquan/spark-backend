@@ -64,7 +64,7 @@ io.on('connection', socket => {
     addUserToRoom(roomCode, socket.userID)
 
     //Welcome user
-    socket.emit('message', { content: 'Hello, welcome to sparkchat!', from: 'sparkbot', to: socket.userID })
+    socket.emit('message', { content: 'Welcome to the chat! Please be nice!', from: 'sparkbot', to: socket.userID })
   })
 
   socket.on('waiting', (empty, callback) => {
@@ -97,7 +97,7 @@ io.on('connection', socket => {
       resetNext(userID)
       io.to(roomCode).emit('next')
     } else {
-      socket.to(roomCode).emit('message', { content: 'The other user would like to move on to the next question', from: 'sparkbot', to: userID})
+      socket.to(roomCode).emit('message', { content: 'The other user would like to move on to the next question. Select \'Next\' to go on!', from: 'sparkbot', to: userID})
     }
   })
 
