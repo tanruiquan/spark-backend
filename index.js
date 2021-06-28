@@ -102,7 +102,7 @@ io.on('connection', socket => {
   })
 
   // forward the private message to the right recipient (and to other tabs of the sender)
-  socket.on('private message', ({ content }, callback) => {
+  socket.on('private message', ({ content }) => {
     const room = getRoomWith(socket.userID)
     const roomCode = room.roomCode
     io.to(roomCode).emit('message', {
@@ -110,20 +110,21 @@ io.on('connection', socket => {
       from: socket.userID,
       to: roomCode,
     })
-    callback()
   })
 
   socket.on('leave', () => {
     console.log(`a socket with userID ${socket.userID} has left`)
     const userID = socket.userID
     const room = getRoomWith(userID)
-    const roomCode = room.roomCode
-    removeUserFromRoom(roomCode, userID)
-    io.to(roomCode).emit('message', {
-      content: 'The other user has left the chat',
-      from: 'sparkbot',
-      to: roomCode
-    })
+    if (room) {
+      const roomCode = room.roomCode
+      removeUserFromRoom(roomCode, userID)
+      io.to(roomCode).emit('message', {
+        content: 'The other user has left the chat',
+        from: 'sparkbot',
+        to: roomCode
+      })
+    }
   })
 
   socket.on('disconnect', () => {
