@@ -1,1 +1,1 @@
-GET http://localhost:3003/api/questions
+GET http://localhost:3003/api/questions/deep

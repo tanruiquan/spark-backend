@@ -72,7 +72,7 @@ picturesRouter.get('/query/:query/:count/:orientation', async (request, response
 })
 
 //does not return photos, returns a list of topics
-picturesRouter.get('/topic', async (request, response) => {
+picturesRouter.get('/topics', async (request, response) => {
   const config = {
     headers: { Authorization: `Client-ID ${env.UNSPLASH_API_KEY}` },
     params: {

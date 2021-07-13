@@ -3,23 +3,24 @@ const mongoose = require('mongoose')
 const questionSchema = new mongoose.Schema({
   category: {
     type: [String],
-    required: true
+    required: true,
   },
   question: {
     type: String,
-    required: true
+    required: true,
   },
   questionAlt: String,
   level: {
     type: String,
+    required: true,
   },
   canPicture: {
     type: Boolean,
-    require: true
+    required: true,
   },
   this: String,
   that: String,
-  topic: String
+  topic: String,
 })
 
 questionSchema.set('toJSON', {

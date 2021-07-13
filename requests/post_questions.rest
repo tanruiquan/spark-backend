@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/questions
+content-type: application/json
+
+{
+  "category": ["icebreakers", "this-or-that", "online-room", "online-stranger", "story"],
+  "question": "Would you rather be too hot or cold?",
+  "level": "1",
+  "this": "hot",
+  "that": "cold"
+}

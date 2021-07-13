@@ -1,1 +1,1 @@
-GET http://localhost:3003/api/pictures/query/bird/3/squarish
+GET http://localhost:3003/api/pictures/query/how

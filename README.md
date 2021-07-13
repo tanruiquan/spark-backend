@@ -6,10 +6,8 @@ This repository contains the backend for SPARK. Our frontend repository is [spar
 - [X] Core feature: Online mode (Milestone 2)
 
 ## Things to do
-- [ ] Sync the pictures for both users in online mode
 - [ ] Unit test for questions and pictures endpoint
 - [ ] Integrated testing
-- [ ] Refactor code to follow socket.io recommendations
 
 # Getting Started
 Create an .env file with your Unsplash API Access Key, MongoDB URI and PORT
