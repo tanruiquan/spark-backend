@@ -6,6 +6,7 @@ const server = http.createServer(app)
 const { userMiddleware } = require('./socket.io/utils/middleware')
 
 const io = require('socket.io')(server)
+
 io.use(userMiddleware)
 const registerEventHandler = require('./socket.io/eventHandler')
 const onConnection = (socket) => {
