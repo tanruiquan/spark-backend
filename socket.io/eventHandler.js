@@ -57,34 +57,39 @@ module.exports = (io, socket) => {
 
   const setQuestions = (questions) => {
     const room = getRoomWith(socket.userID)
-    io.to(room.roomCode).emit('setQuestions', questions)
+    if (room) {
+      io.to(room.roomCode).emit('setQuestions', questions)
+    }
   }
 
   const nextQuestion = () => {
     const userID = socket.userID
     const room = getRoomWith(userID)
-    const roomCode = room.roomCode
-    if (canNext(userID)) {
-      resetNext(userID)
-      io.to(roomCode).emit('next')
-    } else {
-      socket.to(roomCode).emit('message', { content: 'The other user would like to move on to the next question. Select \'Next\' to go on!', from: 'sparkbot', to: 'otherPlayer'})
-      socket.emit('message', { content: 'Your request to move to next question has been sent to the other user. Please wait for them to click Next', from: 'sparkbot', to: userID})
+    if (room) {
+      const roomCode = room.roomCode
+      if (canNext(userID)) {
+        resetNext(userID)
+        io.to(roomCode).emit('next')
+      } else {
+        socket.to(roomCode).emit('message', { content: 'The other user would like to move on to the next question. Select \'Next\' to go on!', from: 'sparkbot', to: 'otherPlayer'})
+        socket.emit('message', { content: 'Your request to move to next question has been sent to the other user. Please wait for them to click Next', from: 'sparkbot', to: userID})
+      }
     }
   }
 
   const sendMessage = ({ content }) => {
     const room = getRoomWith(socket.userID)
-    const roomCode = room.roomCode
-    io.to(roomCode).emit('message', {
-      content,
-      from: socket.userID,
-      to: roomCode,
-    })
+    if (room) {
+      const roomCode = room.roomCode
+      io.to(roomCode).emit('message', {
+        content,
+        from: socket.userID,
+        to: roomCode,
+      })
+    }
   }
 
   const leaveRoom = () => {
-    console.log(`a socket with userID ${socket.userID} has left`)
     const userID = socket.userID
     const room = getRoomWith(userID)
     if (room) {
