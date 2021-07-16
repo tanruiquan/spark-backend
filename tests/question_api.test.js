@@ -151,5 +151,5 @@ describe('fetching an array of questions based on category and level', () => {
 })
 
 afterAll(() => {
-  mongoose.connection.close()
+  mongoose.disconnect();
 })
