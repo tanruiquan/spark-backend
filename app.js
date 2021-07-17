@@ -8,6 +8,7 @@ const middleware = require('./utils/middleware')
 const questionsRouter = require('./controllers/questions')
 const picturesRouter = require('./controllers/pictures')
 const mongoose = require('mongoose')
+require('./socket.io/tests/test_helper').testingDefaults()
 
 logger.info('connecting to', config.MONGODB_URI)
 

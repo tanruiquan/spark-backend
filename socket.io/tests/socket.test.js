@@ -94,6 +94,9 @@ describe('When in the chat room', () => {
       clientSocket.once('message', () => {
         done()
       })
+      clientSocket.once('session', ({ userID }) => {
+        clientSocket.userID = userID
+      })
       clientSocket.on('create', roomCode => {
         clientSocket.emit('join', roomCode)
       })
@@ -173,6 +176,7 @@ describe('When in the chat room', () => {
   test('user can leave the room', (done) => {
     clientSocket.on('message', ({content, from, to}) => {
       expect(content).toBe('The other user has left the chat')
+      expect(from).toBe('sparkbot')
       done()
     })
     clientSocket.emit('leave')
