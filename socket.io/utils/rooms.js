@@ -64,7 +64,10 @@ const getRoomWith = (userID) => {
 
 const getOtherUserIn = (roomCode, userID) => {
   const room = getRoom(roomCode)
-  return room.users.find(user => user.uesrID !== userID)
+  if (room) {
+    return room.users.find(user => user.userID !== userID)
+  }
+  return null
 }
 
 const getAllRooms = () => {

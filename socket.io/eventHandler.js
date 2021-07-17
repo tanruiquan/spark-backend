@@ -14,8 +14,8 @@ module.exports = (io, socket) => {
   const onJoining = async (roomCode, callback) => {
     const otherUser = getOtherUserIn(roomCode, socket.userID)
     const matchingSockets = await io.in(roomCode).allSockets()
-    const roomExists = matchingSockets.size === 1
-    if (otherUser) {
+    const roomExist = matchingSockets.size === 1 || otherUser
+    if (roomExist) {
       // Admit user into the chatroom
       callback({})
     } else {
