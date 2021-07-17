@@ -174,7 +174,7 @@ describe('When in the chat room', () => {
   })
 
   test('user can leave the room', (done) => {
-    clientSocket.on('message', ({content, from, to}) => {
+    clientSocket.on('message', ({content, from }) => {
       expect(content).toBe('The other user has left the chat')
       expect(from).toBe('sparkbot')
       done()

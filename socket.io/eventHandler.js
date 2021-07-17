@@ -1,4 +1,4 @@
-const { addUserToRoom, removeUserFromRoom, getRoomWith, canNext, resetNext } = require('./utils/rooms')
+const { addUserToRoom, removeUserFromRoom, getRoomWith, getOtherUserIn, canNext, resetNext } = require('./utils/rooms')
 const { getWaitingRoom, removeWaitingRoom, addWaitingRoom } = require('./utils/waitingRooms')
 
 const crypto = require('crypto')
@@ -12,9 +12,10 @@ module.exports = (io, socket) => {
   }
 
   const onJoining = async (roomCode, callback) => {
+    const otherUser = getOtherUserIn(roomCode, socket.userID)
     const matchingSockets = await io.in(roomCode).allSockets()
     const roomExists = matchingSockets.size === 1
-    if (roomExists) {
+    if (otherUser) {
       // Admit user into the chatroom
       callback({})
     } else {

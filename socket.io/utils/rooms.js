@@ -62,6 +62,11 @@ const getRoomWith = (userID) => {
   return rooms.find(room => room.users.find(user => user.userID === userID))
 }
 
+const getOtherUserIn = (roomCode, userID) => {
+  const room = getRoom(roomCode)
+  return room.users.find(user => user.uesrID !== userID)
+}
+
 const getAllRooms = () => {
   return rooms
 }
@@ -88,6 +93,7 @@ module.exports = {
   removeUserFromRoom,
   getRoom,
   getRoomWith,
+  getOtherUserIn,
   getAllRooms,
   canNext,
   resetNext,
