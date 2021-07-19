@@ -1,8 +1,9 @@
 const { userMiddleware } = require('../utils/middleware')
-const Client = require('socket.io-client');
+const Client = require('socket.io-client')
 
 let httpServer, httpServerAddr, io, clientSocket, serverSocket
 beforeAll((done) => {
+  require('./test_helper').testingDefaults()
   httpServer = require('http').createServer().listen()
   httpServerAddr = httpServer.address()
   io = require('socket.io')(httpServer)
@@ -65,22 +66,19 @@ describe('In online mode, user', () => {
     })
   })
 
-  test('should stay in the wating room if there is no available waiting room', (done) => {
-    clientSocket.emit('waiting', null, roomCode => {
-      expect(roomCode).toBeUndefined()
-      clientSocket.emit('leaveWaiting')
-    })
-    serverSocket.on('leaveWaiting', done)
-  })
-
   test('should enter the chat room when there is an available room', (done) => {
-    clientSocket.emit('waiting', null, () => {})
     clientSocket.emit('waiting', null, roomCode => {
-      expect(roomCode).toBeDefined()
+      expect(roomCode).toBe('1234')
       done()
     })
   })
 
+  test('should stay in the wating room if there is no available waiting room', (done) => {
+    clientSocket.emit('waiting', null, roomCode => {
+      expect(roomCode).toBeUndefined()
+      done()
+    })
+  })
 })
 
 describe('When in the chat room', () => {
