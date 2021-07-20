@@ -12,6 +12,7 @@ module.exports = (io, socket) => {
   }
 
   const onJoining = async (roomCode, callback) => {
+    if (process.env.NODE_ENV === 'test:cy') return callback({})
     const otherUser = getOtherUserIn(roomCode, socket.userID)
     const matchingSockets = await io.in(roomCode).allSockets()
     const roomExist = matchingSockets.size === 1 || otherUser
