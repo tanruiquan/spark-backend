@@ -17,12 +17,6 @@ const removeWaitingRoom = (userID) => {
 }
 
 const getWaitingRoom = () => {
-  if (process.env.NODE_ENV === 'test:cy') {
-    return {
-      roomCode: '1234',
-      userID: 'user'
-    }
-  }
   return waitingRooms.shift()
 }
 
