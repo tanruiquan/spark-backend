@@ -14,16 +14,13 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "12.x"
-      - name: Create env file
-        run: |
-          touch .env
-          echo TEST_MONGODB_URI=${{ secrets.TEST_MONGODB_URI }} >> .env
-          echo MONGODB_URI=${{ secrets.MONGODB_URI }} >> .env
-          echo PORT=${{ secrets.PORT }} >> .env
-          echo UNSPLASH_API_KEY=${{ secrets.UNSPLASH_API_KEY }} >> .env
       - name: npm install
         run: npm install
       - name: lint
         run: npm run lint
       - name: test
+        env: TEST_MONGODB_URI=${{ secrets.TEST_MONGODB_URI }}
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          PORT=${{ secrets.PORT }}
+          UNSPLASH_API_KEY=${{ secrets.UNSPLASH_API_KEY }}
         run: npm run test
