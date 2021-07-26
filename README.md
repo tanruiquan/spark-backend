@@ -1,13 +1,10 @@
 # spark-backend
 This repository contains the backend for SPARK. Our frontend repository is [spark](https://github.com/qreoct/spark)
 
-## Done so far
+## Completed
 - [X] Setup API endpoints for fetching questions and pictures (Milestone 1)
 - [X] Core feature: Online mode (Milestone 2)
-
-## Things to do
-- [ ] Unit test for questions and pictures endpoint
-- [ ] Integrated testing
+- [X] Unit and E2E testing (Milestone 3)
 
 # Getting Started
 Create an .env file with your Unsplash API Access Key, MongoDB URI and PORT
